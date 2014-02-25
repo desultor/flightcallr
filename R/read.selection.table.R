@@ -15,6 +15,7 @@ detector
   if (missing(Sound_File_Path)) {
     if ("Begin.Path" %in% names(ubertable)) {
       ubertable$Sound_File_Path = sub("(.*)\\\\.*", "\\1", ubertable$Begin.Path)
+      ubertable$Sound_File_Path = sub("(.*)/.*", "\\1", ubertable$Begin.Path)
     } else {
       stop("can't figure out how to calculate the sound file paths")
     }

@@ -24,7 +24,7 @@ sampling_rate=24000
                        "Autocorrelation_Median", "Autocorrelation_Standard_Error", "Dominant_Frequency_Mean", "Dominant_Frequency_Standard_Error", 
                        "Specprop_Mean", "Specprop_SD", "Specprop_SEM", "Specprop_Median", "Specprop_Mode", "Specprop_Q25", "Specprop_Q75", 
                        "Specprop_IQR", "Specprop_Cent", "Specprop_Skewness", "Specprop_Kurtosis", "Specprop_SFM", "Specprop_SH")
-  std.error = function (x) sd(x, na.rm=T)/sqrt(sum(!is.na(x)))
+  std.error = function (x) sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))
   s.f = paste(ubertable$Sound_File_Path, ubertable$Sound_File_Name, sep="/")
   ubertable$s.f = s.f
   if (is.numeric(ubertable$Event_Offset)) {
@@ -137,9 +137,9 @@ sampling_rate=24000
       spectrum.roughness.bl[i] = roughness(foo.meanspec.bl[,2])
       autoc.mean[i] = mean(foo.autoc[,2], na.rm=T)
       autoc.median[i] = median(foo.autoc[,2], na.rm=T)
-      autoc.se[i] = std.error(foo.autoc[,2], na.rm=T)
+      autoc.se[i] = std.error(foo.autoc[,2])
       dfreq.mean[i] = mean(foo.dfreq[,2], na.rm=T)
-      dfreq.se[i] = std.error(foo.dfreq[,2], na.rm=T)
+      dfreq.se[i] = std.error(foo.dfreq[,2])
       specprop.mean[i] = foo.specprop$mean
       specprop.sd[i] = foo.specprop$sd
       specprop.sem[i] = foo.specprop$sem
