@@ -1,16 +1,18 @@
+#' Generate the predictions for a selection table and a random forest model.
+#'
+#' @param ubertable The selection table, with feature columns added by 
+#'   generate.seewave.measures()
+#' @param forest The random forest model.
+#' @param perf A perf object, if bootstrapping has been done.
+#' @param order.by Whether to order the results by percent or rank within day.
+#' @return The selection table, with columns added for RF_Score and 
+#'   RF_Rank_Within_Day
 generate.forest.predictions = function(
-### Generate the predictions for a selection table and a random forest model.
 ubertable, 
-### The selection table, with feature columns added by 
-### generate.seewave.measures()
 forest, 
-### The random forest model.
 perf=NULL, 
-### A perf object, if bootstrapping has been done.
 order.by = "percent"
-### Whether to order the results by percent or rank within day.
 ) {
-  require(randomForest)
   my.pred = predict(forest, ubertable, type="prob")
   ubertable$RF_Score = my.pred[,2]
   if (is.null(perf)) {
@@ -36,5 +38,4 @@ order.by = "percent"
     stop(paste("unknown value for order.by:", order.by))
   }
   ubertable2
-### The selection table, with columns added for RF_Score and RF_Rank_Within_Day
 }

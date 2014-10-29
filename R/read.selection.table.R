@@ -1,15 +1,17 @@
+#' Read a Raven selection table into a data frame.
+#'
+#' @param filename The selection table to read.
+#' @param Sound_File_Path The path of the sound file(s) referred to in the 
+#'   selection table. If the Begin Path measurement is present in the selection
+#'   table, it is not necessary to include this argument. If sound files are at #'   multiple paths, it is necessary to include the Begin Path measurement 
+#'   instead of using this argument.
+#' @param detector  Detector can be specified manually if it's not present in 
+#'   the selection table
+#' @return The data frame representation of the selection table.
 read.selection.table = function (
-### Read a Raven selection table into a data frame.
 filename, 
-### The selection table to read.
 Sound_File_Path, 
-### The path of the sound file(s) referred to in the selection table. If the
-### Begin Path measurement is present in the selection table, it is not 
-### necessary to include this argument. If sound files are at multiple paths,
-### it is necessary to include the Begin Path measurement instead of using this
-### argument.
 detector
-# Detector can be specified manually if it's not present in the selection table
 ) {
   ubertable = read.csv(filename, header=T, sep="\t")
   if (missing(Sound_File_Path)) {
@@ -62,5 +64,4 @@ detector
     ubertable.new$Call_vs_Noise = factor(ubertable.new$Call_vs_Noise)
   }
   return(ubertable.new)
-### The data frame representation of the selection table.
 }

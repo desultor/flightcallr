@@ -1,7 +1,9 @@
+#' Rejigger a perf object from ROCR so that it is no longer sparse.
+#'
+#' @param perf The perf object to be rejiggered.
+#' @return The non-sparse representation of that perf object.
 rejigger.perf = function (
-### Rejigger a perf object from ROCR so that it is no longer sparse.
 perf
-### The perf object to be rejiggered.
 ) {
   alphas = c()
   n.fold  = length(perf@alpha.values)
@@ -43,5 +45,4 @@ perf
   df$y.values = y.values
   names(df) = c("alpha.values", "x.values", "y.values")
   return(df)
-### The non-sparse representation of that perf object.
 }

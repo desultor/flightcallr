@@ -1,12 +1,17 @@
+#' Calculate the operating point for a given ROCR perf object.
+#' 
+#' @param perf The perf object.
+#' @param method The confidence estimation method.
+#' @param desired.tpr The desired TPR. The operating point returned will have a
+#'   95 percent chance of achieving this TPR or higher.
+#' 
+#' @return A vector containing the operating point, as well as estimates of TPR and FPR.
+
+
 calculate.operating.parameters = function(
-### Calculate the operating point for a given ROCR perf object.
 perf, 
-### The perf object.
 method="frequency", 
-### The confidence estimation method
 desired.tpr="0.95"
-### The desired TPR. The operating point returned will have a 95% chance of 
-### achieving this TPR or higher.
 ) {
   op = 2 # filler for data structure construction
   op.param = data.frame(op)
@@ -61,5 +66,4 @@ desired.tpr="0.95"
   op.param$ylower = bar$conf.int[1]
   op.param$yhigher = bar$conf.int[2]
   return(op.param)
-### A vector containing the operating point, as well as estimates of TPR and FPR.
 }

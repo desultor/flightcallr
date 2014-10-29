@@ -1,24 +1,28 @@
+#' Extract acoustic features from selections in a selection table. Requires 
+#'   that SoX (http://sox.sourceforge.net) be installed and callable as "soxi".
+#'
+#' @param ubertable A selection table. In order to deal with selections which 
+#'   span sound files, generate.seewave.measures() can run soxi to tell the 
+#'   lengths of sound files.  In this case, it is necessary that the "File 
+#'   Offset (s)" column be present, as well as either "Begin File" or "Begin 
+#'   Path".
+#' @param sf_length As an alternative to running soxi, if all the sound files 
+#'   are of the same length, this can be specified (in seconds).
+#' @param save_progress_file Name of file to save intermediate progress to. If 
+#'   absent, autosave is not done.
+#' @param save_every How many rows to calculate before saving intermediate 
+#'   progress file.
+#' @param sampling_rate The sampling rate of the file(s) containing selections.
+#'   Necessary in order to choose a suitable FFT window size.
+#' @return The original selection table, with columns added for generated 
+#'   features.
 generate.seewave.measures = function(
-### Extract acoustic features from selections in a selection table. Requires
-### that SoX (http://sox.sourceforge.net) be installed and callable as "soxi".
 ubertable, 
-### A selection table. In order to deal with selections which span sound files,
-### generate.seewave.measures() can run soxi to tell the lengths of sound files.
-### In this case, it is necessary that the "File Offset (s)" column be present,
-### as well as either "Begin File" or "Begin Path".
 sf_length, 
-### As an alternative to running soxi, if all the sound files are of the same
-### length, this can be specified (in seconds).
 save_progress_file, 
-### Name of file to save intermediate progress to. If absent, autosave is not
-### done.
 save_every=5000,
-### How many rows to calculate before saving intermediate progress file.
 sampling_rate=24000
-### The sampling rate of the file(s) containing selections. Necessary in order to choose a suitable FFT window size.
 ) {
-  require(tuneR)
-  require(seewave)
   seewave.measures = c("Rugosity", "Crest_Factor", "Temporal_Entropy", "Shannon_Entropy", "Shannon_Entropy_Bandlimited", "Spectral_Flatness_Measure", 
                        "Spectral_Flatness_Measure_Bandlimited", "Spectrum_Roughness", "Spectrum_Roughness_Bandlimited", "Autocorrelation_Mean", 
                        "Autocorrelation_Median", "Autocorrelation_Standard_Error", "Dominant_Frequency_Mean", "Dominant_Frequency_Standard_Error", 
@@ -100,10 +104,10 @@ sampling_rate=24000
         specprop.mode[i] = specprop.Q25[i] = specprop.Q75[i] = specprop.cent[i] = specprop.skewness[i] = specprop.kurtosis[i] =
         specprop.sfm[i] = specprop.sh[i] = NA
     } else {
-      foo = readWave(s.f[i], from=b.t[i], to=e.t[i], units="seconds")
+      foo = tuneR::readWave(s.f[i], from=b.t[i], to=e.t[i], units="seconds")
       # trying PSD - it seems to give clearer plots
       #foo.spec = spec(foo, plot=F, wl=128)
-      foo.spec = spec(foo, plot=F, wl=sampling_rate * (128/24000), PSD=T)
+      foo.spec = seewave::spec(foo, plot=F, wl=sampling_rate * (128/24000), PSD=T)
       # don't need to bandlimit myself, specprop has flim - probably remove this and
       # associated measures
       foo.spec.bl = bandlimit.spectrum(foo.spec, band[i])
@@ -119,22 +123,21 @@ sampling_rate=24000
       } else {
         print(paste("hmm,", band, "is not a recognized band"))
       }
-      foo.specprop = specprop(foo.spec, flim=c(lower, upper))
-      # some other library is stinking up env(), call it by namespace explicitly
-      foo.env = seewave:::env(foo, plot=F) 
-      foo.meanspec = meanspec(foo, plot=FALSE, wl=sampling_rate * (128/24000), ovlp=90)
+      foo.specprop = seewave::specprop(foo.spec, flim=c(lower, upper))
+      foo.env = seewave::env(foo, plot=F) 
+      foo.meanspec = seewave::meanspec(foo, plot=FALSE, wl=sampling_rate * (128/24000), ovlp=90)
       foo.meanspec.bl = bandlimit.spectrum(foo.meanspec, band[i])
-      foo.autoc = autoc(foo, wl=sampling_rate * (128/24000), plot=F)
-      foo.dfreq = dfreq(foo, wl=sampling_rate * (128/24000), plot=F, ovlp=90)
-      rugosity[i] = rugo(foo@left / max(foo@left))
-      crest.factor[i] = crest(foo)$C
-      temporal.entropy[i] = th(foo.env)
-      shannon.entropy[i] = sh(foo.spec)
-      shannon.entropy.bl[i] = sh(foo.spec.bl)
-      spectral.flatness.measure[i] = sfm(foo.spec)
-      spectral.flatness.measure.bl[i] = sfm(foo.spec.bl)
-      spectrum.roughness[i] = roughness(foo.meanspec[,2])
-      spectrum.roughness.bl[i] = roughness(foo.meanspec.bl[,2])
+      foo.autoc = seewave::autoc(foo, wl=sampling_rate * (128/24000), plot=F)
+      foo.dfreq = seewave::dfreq(foo, wl=sampling_rate * (128/24000), plot=F, ovlp=90)
+      rugosity[i] = seewave::rugo(foo@left / max(foo@left))
+      crest.factor[i] = seewave::crest(foo)$C
+      temporal.entropy[i] = seewave::th(foo.env)
+      shannon.entropy[i] = seewave::sh(foo.spec)
+      shannon.entropy.bl[i] = seewave::sh(foo.spec.bl)
+      spectral.flatness.measure[i] = seewave::sfm(foo.spec)
+      spectral.flatness.measure.bl[i] = seewave::sfm(foo.spec.bl)
+      spectrum.roughness[i] = seewave::roughness(foo.meanspec[,2])
+      spectrum.roughness.bl[i] = seewave::roughness(foo.meanspec.bl[,2])
       autoc.mean[i] = mean(foo.autoc[,2], na.rm=T)
       autoc.median[i] = median(foo.autoc[,2], na.rm=T)
       autoc.se[i] = std.error(foo.autoc[,2])
@@ -161,6 +164,5 @@ sampling_rate=24000
   print("still alive 4")
   ubertable$Detector_numeric = as.numeric(ubertable$Detector)
   return(ubertable)
-### The original selection table, with columns added for generated features.
 }
 

@@ -1,18 +1,20 @@
+#' Save a selection table to a file.
+#'
+#' @param selection.table The selection table data frame.
+#' @param filename The desired filename.
+#' @param path The desired path.
+#' @param include.measures Include generated features in the table?
+#' @param include.call.vs.noise Include the Call_vs_Noise column?
+#' @param include.predictions Include prediction columns RF_Score and 
+#'   RF_Prediction?
+#' @return The return value is the same as that of write.table()
 save.selection.table = function(
-### Save a selection table to a file.
-### Multi-line documentation!
 selection.table = "", 
-### The selection table data frame.
 filename = "", 
-### The desired filename
 path = "", 
-### The desired path
 include.measures = F, 
-### Include generated features in the table?
 include.call.vs.noise = F,
-### Include the Call_vs_Noise column?
 include.predictions = F
-### Include prediction columns RF_Score and RF_Prediction?
 ) {
   # save a selection table!
   seewave.measures = c("Rugosity", "Crest_Factor", "Temporal_Entropy", "Shannon_Entropy", "Shannon_Entropy_Bandlimited", "Spectral_Flatness_Measure", 
@@ -36,5 +38,4 @@ include.predictions = F
   names(selection.table) = gsub("\\.Hz\\.", "(s)", names(selection.table))
   names(selection.table) = gsub("\\.", " ", names(selection.table))
   write.table(selection.table, file=my.path, row.names=F, sep="\t", quote=F)
-### The return value is the same as that of write.table()
 }
